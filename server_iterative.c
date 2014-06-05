@@ -1,18 +1,7 @@
 /* Copyright (c) 2014.3 by Simon Xia
+ *
  *  server with tcp connection use iterative model
- *  All Rights Reserved
  */
-/*
-#include<stdio.h>
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>  
-#include<string.h>
-*/
-//#define MAX_LOG 10
-//#define MAX_BUF_SIZE 1024
-
 #include"simon_socket.h"
 
 #define SERVER_PORT 12345
