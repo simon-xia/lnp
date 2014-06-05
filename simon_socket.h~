@@ -10,7 +10,7 @@
 #include<sys/types.h>
 #include<netinet/in.h>   //sockaddr_in
 #include<arpa/inet.h>    //htons etc
-#include<netdb.h>    //gethostbyname etc
+#include<netdb.h>    //gethostbyname
 
 #include<errno.h>   // for perror, errno
 
