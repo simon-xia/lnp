@@ -7,7 +7,6 @@
 #include<string.h>
 
 #include<unistd.h>      //for fork open read etc
-#include<pthread.h>
 #include<signal.h>       
 #include<pthread.h>
 #include<sys/socket.h>   // for socket, bind, listen, setsockopt
@@ -41,7 +40,7 @@ int init_tcp_isock(char *addr, int port);
 void convert_upper(char * buf, int len);
 void process_client(int connectfd, const struct sockaddr_in *client);
 
-int accept_request(int, struct sockaddr*, size_t *);
+
 
 
 #endif

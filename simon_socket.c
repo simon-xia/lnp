@@ -39,7 +39,7 @@ void exit_error(char *fmt, ...)
 
 int init_passivesock(char *transport_server, int port)
 {
-	int sockfd, type, addr_len;
+	int sockfd, type;
 	struct sockaddr_in local_addr;
 
 	if (!strcmp("udp", transport_server))
@@ -51,8 +51,6 @@ int init_passivesock(char *transport_server, int port)
 	local_addr.sin_family = AF_INET; 
 	local_addr.sin_port = htons(port);
 	local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	addr_len = sizeof(struct sockaddr_in);
 
 	if ((sockfd = socket(AF_INET, type, 0)) < 0)
 		exit_error("Fail to init %s socket: %s", transport_server, strerror(errno));
@@ -174,3 +172,77 @@ int init_tcp_isock(char *addr, int port)
 	return init_initiativesock("tcp", addr, port);
 }
 
+/* 
+ * Take this function as a example to show what server has done
+ */
+void convert_upper(char * buf, int len)
+{
+	int i = 0;
+	while (i != len)
+	{
+		if (buf[i] >= 97 && buf[i] <= 122)
+			buf[i] -= 32;
+		i++;
+	}
+}
+
+void process_client(int connectfd, const struct sockaddr_in *client)
+{
+	int recv_bytes, send_bytes;
+	while (1)
+	{
+		memset(recv_buf, 0, MAX_BUF_SIZE);
+		printf("\n**********************\n");
+		if ((recv_bytes = recv(connectfd, recv_buf, MAX_BUF_SIZE, 0)) > 0)
+		{
+			recv_buf[recv_bytes] = '\0';
+			printf("%d Bytes data received from%s:%d\n%s\n", recv_bytes, inet_ntoa(client -> sin_addr), ntohs(client -> sin_port), recv_buf);
+		}
+		else if (!recv_bytes)
+		{
+			printf("%s:%d quit the connection!\n", inet_ntoa(client -> sin_addr), ntohs(client -> sin_port));
+			break;
+		}
+		else
+		{
+			if (errno == EINTR)
+				continue;
+			printf("fail to receive data!\n");
+		}
+
+		if (!strcmp(recv_buf, "quit"))
+			break;
+
+		convert_upper(recv_buf, recv_bytes);
+
+		if ((send_bytes = send(connectfd, recv_buf, strlen(recv_buf)+1, 0)) > 0)
+			{
+				printf("%d Bytes data send to %s:%d\n%s\n", recv_bytes, inet_ntoa(client -> sin_addr), ntohs(client -> sin_port), recv_buf);
+			}
+			else
+				printf("fail to send data!\n");
+			
+		printf("**********************\n");
+	}
+	
+	printf("%s:%d quit the connection!\n", inet_ntoa(client -> sin_addr), ntohs(client -> sin_port));
+	close(connectfd);
+}
+
+int accept_request(int sockfd, struct sockaddr *client_addr, size_t *sin_len)
+{
+	int acfd;
+	if ((acfd = accept(sockfd, client_addr, sin_len)) == -1)
+	{
+		if (errno == EINTR)
+			return 0;
+		else 
+		{
+			perror("Accept request failed: ");
+			return -1;
+		}
+	}
+	else
+		printf("Get a connection from %s:%d !\n", inet_ntoa(((struct sockaddr_in*)client_addr)->sin_addr), ntohs(((struct sockaddr_in*)client_addr)->sin_port));
+	return acfd;
+}
