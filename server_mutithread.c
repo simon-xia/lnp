@@ -20,7 +20,7 @@ void *start_routine(void *arg)
 	close(tmp.connectfd);
 
 */
-	process_client(((ARG*)arg) -> connectfd, &((ARG*)arg) -> addr_info);//地址信息显示有误
+	process_client(((ARG*)arg) -> connectfd, &((ARG*)arg) -> addr_info);//指针传地址，地址信息显示有误
 	close(((ARG *)arg) -> connectfd);
 	
 	//free(arg);
