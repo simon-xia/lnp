@@ -1,3 +1,8 @@
+ /* 
+ *   server with muti-thread 
+ *				Fri Mar 21 22:12:47 CST 2014
+ *              by  Simon Xia
+ */
 #include"simon_socket.h"
 
 #define SERV_PORT 12345

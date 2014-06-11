@@ -1,5 +1,11 @@
+/* 
+ *   a simple thread pool
+ *				Mon Jun 9 21:44:36 CST 2014
+ *              by  Simon Xia
+ */
 #include"pthread_pool.h"
 
+/* each worker thread's thread function to handle the task */
 void *pthread_process(void *arg)
 {
 	task_node *tmp = NULL;
@@ -41,6 +47,8 @@ void *pthread_process(void *arg)
 	printf("%lu thread will exit\n", pthread_self());
 	pthread_exit(NULL);
 }
+
+/* main thread function to manage the thread pool */
 /*
 void *pthread_main(void *arg)
 {
@@ -72,6 +80,10 @@ void *pthread_main(void *arg)
 	pthread_exit(NULL);
 }
 */
+
+/* Initialize the thread pool 
+ * Input: number of worker thread
+ */
 void pool_init(int pthread_num)
 {
 	int i = 0;
@@ -94,6 +106,7 @@ void pool_init(int pthread_num)
 
 }
 
+/* add task into task queue */
 int add_task(void * (*func)(void *p), void *arg)
 {
 	task_node *tmp = (task_node*)malloc(sizeof(task_node));
@@ -119,7 +132,7 @@ int add_task(void * (*func)(void *p), void *arg)
 	return 0;
 }
 
-
+/* destory the pool after all work */
 void pool_destory()
 {
 	int i;

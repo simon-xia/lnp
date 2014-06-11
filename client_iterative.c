@@ -1,12 +1,11 @@
- /* Copyright (c) 2014.3 by Simon Xia
-  *
-  *  client with tcp connection
+ /* 
+  *   a tcp client use iterative model
+  *				Fri Mar 14 21:34:10 CST 2014
+  *             by  Simon Xia
   */
 #include"simon_socket.h"
 
 #define SERV_PORT 12345
-
-char recv_buf[MAX_BUF_SIZE], send_buf[MAX_BUF_SIZE];
 
 int writetobuf()
 {

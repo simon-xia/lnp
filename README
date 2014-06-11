@@ -1,0 +1,3 @@
+This floder just holds a series of my exercises of Linux Network Programming
+
+To make it convenient to compile and run, I wrote a bash script simon.sh. cause it's not an integrated project, the Makefile seems not to be suitable

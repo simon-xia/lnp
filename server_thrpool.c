@@ -1,8 +1,9 @@
-/* Copyrights (c) By Simon Xia
- * server use mutiprocess model
- * process each connection with a newprocess, receive "quit" to end the connection
- * All Rights Reserved
+ /* 
+ *   server with thread pool to realize concurrence 
+ *				Mon Jun 9 21:50:36 CST 2014
+ *              by  Simon Xia
  */
+
 #include"simon_socket.h"
 
 #define SERV_PORT 12345
@@ -15,6 +16,7 @@ extern void pool_destory();
 typedef struct client_info{
 	int fd;
 	struct sockaddr_in addr;
+	struct client_info *next;
 }client_info;
 
 void *process(void *arg)
@@ -34,13 +36,14 @@ int main()
 	int sockfd, acfd;
 	size_t sin_len;
 	struct sockaddr_in client_addr;
-	client_info *info_tmp;
+	client_info *info_tmp, *info_head = NULL, *info_tail = NULL;
 
 	signal(SIGINT, sig_int);
 
 	sin_len = sizeof(struct sockaddr);
 	sockfd = init_tcp_psock(SERV_PORT);
 	pool_init(THREAD_CNT);
+
 
 	for ( ; ; )
 	{
@@ -56,9 +59,19 @@ int main()
 		memset(info_tmp, 0, sizeof(client_info));
 		info_tmp->fd = acfd;
 		info_tmp->addr = client_addr;
+		info_tmp->next = NULL;
+		
+		if (info_head) {
+			info_tail = info_tail -> next = info_tmp;
+		}
+		else{
+			info_head = info_tail = info_tmp;
+		}
 		add_task(process, (void*)info_tmp);
-		free(info_tmp);
 	}
 
+	for (info_tmp = info_head; info_tmp; free(info_tmp))
+		info_head = info_head -> next;
+
 	return 0;
-}
+

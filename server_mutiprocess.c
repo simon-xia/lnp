@@ -1,7 +1,7 @@
-/* Copyrights (c) By Simon Xia
- * server use mutiprocess model
- * process each connection with a newprocess, receive "quit" to end the connection
- * All Rights Reserved
+ /* 
+ *   server with muti-process 
+ *				Fri Mar 21 21:25:10 CST 2014
+ *              by  Simon Xia
  */
 #include"simon_socket.h"
 

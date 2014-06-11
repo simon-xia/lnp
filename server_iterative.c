@@ -1,6 +1,7 @@
-/* Copyright (c) 2014.3 by Simon Xia
- *
+/* 
  *  server with tcp connection use iterative model
+ *				Fri Mar 14 21:25:10 CST 2014
+ *              by  Simon Xia
  */
 #include"simon_socket.h"
 

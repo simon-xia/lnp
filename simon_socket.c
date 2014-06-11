@@ -1,7 +1,14 @@
+/*
+ *  Some functions to help network programming
+ *    
+ *				Wed May 21 14:10:51 CST 2014
+ *				     By   Simon Xia
+ */
 #include"simon_socket.h"
 
 extern int errno;
 
+/* Handle error and exit */
 void exit_error(char *fmt, ...)
 {
 	char *p_tmp = fmt, *s_tmp;
@@ -37,6 +44,7 @@ void exit_error(char *fmt, ...)
 	exit(1);
 }
 
+/* Initialize the socket which is passive */
 int init_passivesock(char *transport_server, int port)
 {
 	int sockfd, type;
@@ -70,17 +78,22 @@ int init_passivesock(char *transport_server, int port)
 	return sockfd;
 }
 
+/* A udp passive socket wrapper */
 int init_udp_psock(int port)
 {
 	return init_passivesock("udp", port);
 }
 
+/* A tcp passive socket wrapper */
 int init_tcp_psock(int port)
 {
 	return init_passivesock("tcp", port);
 }
 
-/* return the short count */
+/* 
+ *	 A wrapper of send
+ * RETURN: short count 
+ */
 int simon_send(int fd, char* buf, unsigned int n)
 {
 	int left = n;	
@@ -106,6 +119,10 @@ int simon_send(int fd, char* buf, unsigned int n)
 	return n - left;
 }
 
+/* 
+ *	 A wrapper of recv
+ *	 RETURN: short count 
+ */
 int simon_recv(int fd, char* buf, unsigned int n)
 {
 	int left = n;	
@@ -131,6 +148,7 @@ int simon_recv(int fd, char* buf, unsigned int n)
 	return n - left;
 }
 
+/* Initialize the socket which is initiative */
 int init_initiativesock(char *transport_server, char *addr, int port)
 {
 	int sockfd, type;
@@ -162,11 +180,13 @@ int init_initiativesock(char *transport_server, char *addr, int port)
 	return sockfd;
 }
 
+/* A udp initiative socket wrapper */
 int init_udp_isock()
 {
 	return init_initiativesock("udp", NULL, 0);
 }
 
+/* A tcp initiative socket wrapper */
 int init_tcp_isock(char *addr, int port)
 {
 	return init_initiativesock("tcp", addr, port);
@@ -186,6 +206,7 @@ void convert_upper(char * buf, int len)
 	}
 }
 
+/* Process the client's request */
 void process_client(int connectfd, const struct sockaddr_in *client)
 {
 	int recv_bytes, send_bytes;
@@ -198,7 +219,7 @@ void process_client(int connectfd, const struct sockaddr_in *client)
 			recv_buf[recv_bytes] = '\0';
 			printf("%d Bytes data received from%s:%d\n%s\n", recv_bytes, inet_ntoa(client -> sin_addr), ntohs(client -> sin_port), recv_buf);
 		}
-		else if (!recv_bytes)
+		else if (!recv_byte)
 		{
 			printf("%s:%d quit the connection!\n", inet_ntoa(client -> sin_addr), ntohs(client -> sin_port));
 			break;
@@ -229,6 +250,7 @@ void process_client(int connectfd, const struct sockaddr_in *client)
 	close(connectfd);
 }
 
+/* To accept request, actually a wrapper of system call accept */
 int accept_request(int sockfd, struct sockaddr *client_addr, size_t *sin_len)
 {
 	int acfd;

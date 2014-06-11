@@ -1,23 +1,12 @@
-/**/
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+/* 
+ *  server with tcp connection use select to realize I/O multiplexing
+ *				Mon Jun 2 21:44:36 CST 2014
+ *              by  Simon Xia
+ */
+#include "simon_socket.h"
 
-#include<sys/socket.h>   // for socket, bind, listen
-#include<sys/types.h>
-#include<netinet/in.h>   //sockaddr_in
-#include<arpa/inet.h>    //htons etc
-
-#include<sys/select.h>
-#include<errno.h>   // for perror
-
-#define SERV_PORT 11111
-#define MAX_BACKLOG 10
-#define LOCAL_ADDR "127.0.0.1" 
+#define SERV_PORT 12345
 #define FDSET_SIZE 32
-#define MAX_BUF_SIZE 1024
-
-char recv_buf[MAX_BUF_SIZE];
 
 typedef struct Clientinfo{
 	int fd;
@@ -76,39 +65,16 @@ int process_cli(Clientinfo cli)
 
 int main()
 {
-	int sockfd, retval, connfd, addr_len, i, maxfd;
-	struct sockaddr_in client_addr, server_addr;
+	int sockfd, retval, connfd, i, maxfd;
+    size_t addr_len; 
+	struct sockaddr_in client_addr;
 	fd_set fdset, watchset;
-	long ready_set[FDSET_SIZE];
 	Clientpool cpool;
 
-	server_addr.sin_family = AF_INET; 
-	server_addr.sin_port = htons(SERV_PORT);
-	server_addr.sin_addr.s_addr = inet_addr(LOCAL_ADDR);
-
-	addr_len = sizeof(struct sockaddr_in);
+	addr_len = sizeof(struct sockaddr);
 	init_clientpool(&cpool);
 
-	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-	{
-		perror("Create socket error");
-		exit(0);
-	}
-
-	int opt = SO_REUSEADDR;
-	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-	if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr)) < 0)
-	{
-		perror("Fail to bind port");
-		exit(0);
-	}
-
-	if (listen(sockfd, MAX_BACKLOG) < 0)
-	{
-		perror("Fail to bind port");
-		exit(0);
-	}
+	sockfd = init_tcp_psock(SERV_PORT);
 	
 	FD_ZERO(&fdset);
 	FD_SET(sockfd, &fdset);
