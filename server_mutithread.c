@@ -5,24 +5,24 @@
 typedef struct arg_tag
 {
 	int connectfd;
-	struct sockaddr_in * addr_info;
+	struct sockaddr_in  addr_info; //不用指针，入口地址会被改写
 }ARG;
 
 
 void *start_routine(void *arg)
 { 
 	pthread_detach(pthread_self());
-
+/*
 	ARG tmp;
 	tmp.connectfd = ((ARG*)arg) -> connectfd;
-	memcpy(tmp.addr_info, ((ARG*)arg) -> addr_info, sizeof(struct sockaddr_in));
-
-	process_client(tmp.connectfd, tmp.addr_info);
+	tmp.addr_info = ((ARG*)arg) -> addr_info;
+	process_client(tmp.connectfd, &tmp.addr_info);
 	close(tmp.connectfd);
-	/*
-	process_client(((ARG*)arg) -> connectfd, ((ARG*)arg) -> addr_info);//地址信息显示有误
+
+*/
+	process_client(((ARG*)arg) -> connectfd, &((ARG*)arg) -> addr_info);//地址信息显示有误
 	close(((ARG *)arg) -> connectfd);
-	*/
+	
 	//free(arg);
 	pthread_exit(NULL);
 }
@@ -46,14 +46,14 @@ int main()
 
 		arg = malloc(sizeof(ARG));
 		arg -> connectfd = acfd;
-		arg -> addr_info = &client_addr;
+		arg -> addr_info = client_addr;
 
 		if (pthread_create(&thread, NULL, start_routine, (void*)arg))
 		{
 			printf("Create thread error!\n");
 			continue;
 		}
-		//free(arg);
+		free(arg);
 	}
 	close(sockfd);
 	return 0;
